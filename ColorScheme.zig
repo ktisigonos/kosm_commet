@@ -96,7 +96,7 @@ surface_bright: ?Color = null,
 surface_container_lowest: ?Color = null,
 /// Most of Commet's panels. `from`: the background role.
 surface_container_low: ?Color = null,
-/// Inputs and cards, such as the search bar. `from`: the background, `surface.raised`.
+/// The room list and the room's side panel. `from`: the background role.
 surface_container: ?Color = null,
 /// `from`: the background, `surface.overlay`.
 surface_container_high: ?Color = null,

@@ -55,8 +55,8 @@ pub const Settings = struct {
 /// How opaque Commet's own themes make the tertiary container: a faint wash of the color.
 const faint_alpha = 20.0 / 255.0;
 
-/// Colors from the theme, flat: every panel on the background, one raised shade for inputs,
-/// hovered items and cards, the overlay shade for menus and popups, quiet text and icons
+/// Colors from the theme, flat: every panel on the background, the overlay shade for menus,
+/// popups and hovered items, quiet text and icons
 /// (Commet's `secondary`) from the foreground made muted, the accent only where Commet wants
 /// one, tertiary from the warning role, errors, links and inline code from their roles, and
 /// Dark's rounded panel corners in dark mode.
@@ -104,7 +104,7 @@ pub fn from(theme: kosm.Theme) App {
             .surface_bright = overlay,
             .surface_container_lowest = background,
             .surface_container_low = background,
-            .surface_container = raised,
+            .surface_container = background,
             .surface_container_high = overlay,
             .surface_container_highest = overlay,
             .inverse_surface = foreground,
@@ -278,7 +278,7 @@ test "the theme is flat, with alpha-first colors under camelCase keys, and the p
 test "every panel is the background, quiet text is the muted foreground, and light mode draws no outlines" {
     const app = from(test_theme);
     const scheme = app.color_scheme;
-    for ([_]?kosm.Color{ scheme.surface, scheme.surface_dim, scheme.surface_container_lowest, app.foundation_color }) |panel| {
+    for ([_]?kosm.Color{ scheme.surface, scheme.surface_dim, scheme.surface_container_lowest, scheme.surface_container, app.foundation_color }) |panel| {
         try testing.expectEqual(test_theme.roles.background, panel.?);
     }
     try testing.expectEqual(test_theme.variations.emphasis.muted.apply(test_theme.roles.foreground), scheme.secondary.?);

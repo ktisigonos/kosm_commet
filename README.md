@@ -21,9 +21,9 @@ Commet's fonts are built in and its window is opaque, so the app has no font or 
 With the theme's `files = .per_kosmos` the theme's folder is named after the kosmos instead
 (`krystallos.dark`), so each kosmos applied keeps its own.
 
-`from(theme)` keeps Commet flat: every panel (the space rail, the room list, the main area) and
-the foundation behind them on the background role, one raised shade (`surface.raised`) for
-inputs, cards and hovered items, and the overlay shade for menus and popups; quiet text and
+`from(theme)` keeps Commet flat: every panel (the space rail, the room list, the main area, the
+room's side panel) and the foundation behind them on the background role, and the overlay shade
+(`surface.overlay`) for menus, popups and hovered items; quiet text and
 icons, which Commet takes from `secondary`, the foreground made muted; the accent only as
 `primary`; `tertiary` from the warning role, as Commet's Dark uses yellow; errors, links and
 inline code from the error, link and keyword code colors; and, in dark mode, Dark's rounded
