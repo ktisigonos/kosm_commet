@@ -1,0 +1,24 @@
+.{
+    .name = .kosm_commet,
+    .version = "0.0.0",
+    .fingerprint = 0x3c60ec4b5369cc96, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.17.0",
+    .dependencies = .{
+        .kosm_json = .{
+            .url = "git+https://git.nnstdios.com/ktisigonos/kosm_json?ref=master#9bdef5a5a41e4c5951269e70268acfeba1a16b45",
+            .hash = "kosm_json-0.0.0-F6-Idb2qAADSKPg6lCwaWLWNCwevefNEBVEPBTxbuGWg",
+        },
+        .kosm = .{
+            .url = "git+https://git.nnstdios.com/ktisigonos/kosm?ref=master#12c064d7d057c8f156c5bdea54aa9d66f3dfc4c0",
+            .hash = "kosm-0.0.0-YCShsltFDACF86BaQyNgVB3-C86ROmOi3Hog97-HnJs0",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "root.zig",
+        "App.zig",
+        "ColorScheme.zig",
+        "README.md",
+    },
+}
