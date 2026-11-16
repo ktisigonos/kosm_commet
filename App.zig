@@ -23,9 +23,12 @@ preferences: ?[]const u8 = "~/.var/app/chat.commet.commetapp/data/commet/shared_
 base: Base = .dark,
 /// `colorScheme`.
 color_scheme: ColorScheme = .{},
-/// `foundation.color`: the backdrop behind every panel. `from`: the background role. null:
-/// the base's.
+/// `foundation.color`: the backdrop behind every panel. `from`: the background,
+/// `surface.sunken`. null: the base's.
 foundation_color: ?kosm.Color = null,
+/// `settings`: the borders between panels. Commet replaces the base's with these, so a null field
+/// is off or 0, not the base's. `from`: Commet's Dark draws borders 1 px round; its Light none.
+settings: Settings = .{},
 
 /// A theme's `colorScheme`.
 pub const ColorScheme = @import("ColorScheme.zig");
@@ -34,51 +37,76 @@ pub const ColorScheme = @import("ColorScheme.zig");
 /// accent color.
 pub const Base = enum { dark, light, you_dark, you_light };
 
-/// The base from the theme's mode, and colors from the theme: Material's roles from the
-/// accent, secondary and error roles and the palette's purple, surfaces from the background and
-/// the theme's surface variations, text from the foreground, links from the link role and inline
-/// code from the keyword code color.
+/// A theme's `settings`, in pixels.
+pub const Settings = struct {
+    /// `caulkBorders`: whether panels are outlined. null: off.
+    caulk_borders: ?bool = null,
+    /// `caulkStrokeThickness`. null: 0.
+    caulk_stroke_thickness: ?f64 = null,
+    /// `caulkBorderRadius`. null: 0.
+    caulk_border_radius: ?f64 = null,
+    /// `caulkPadding`. null: 0.
+    caulk_padding: ?f64 = null,
+    /// `shadowBlurRadius`. null: 0.
+    shadow_blur_radius: ?f64 = null,
+};
+
+/// How opaque Commet's own themes make the tertiary container: a faint wash of the color.
+const faint_alpha = 20.0 / 255.0;
+
+/// Colors laid out like Commet's own Dark and Light themes, from the theme: panels on the
+/// background with one shade sunken below it and a few raised above, quiet text and icons
+/// (Commet's `secondary`) from the foreground made muted, the accent only where Commet wants
+/// one, tertiary from the warning role, errors, links and inline code from their roles, and
+/// Dark's borders in dark mode.
 pub fn from(theme: kosm.Theme) App {
     const roles = theme.roles;
     const variations = theme.variations;
+    const surface = variations.surface;
     const background = roles.background;
     const foreground = roles.foreground;
     const on = variations.contrast.on;
-    const container = variations.alpha.highlight;
-    const tertiary = theme.palette.purple;
+    const muted = variations.emphasis.muted.apply(foreground);
+    const sunken = surface.sunken.apply(background);
+    const raised = surface.raised.apply(background);
+    const overlay = surface.overlay.apply(background);
+    var tertiary_container = roles.warning;
+    tertiary_container.alpha = faint_alpha;
+    const dark = theme.mode == .dark;
     return .{
         .files = theme.files,
-        .base = if (theme.mode == .dark) .dark else .light,
-        .foundation_color = background,
+        .base = if (dark) .dark else .light,
+        .foundation_color = sunken,
+        .settings = if (dark) .{ .caulk_borders = true, .caulk_border_radius = 1 } else .{},
         .color_scheme = .{
             .primary = roles.accent,
             .on_primary = on.apply(roles.accent),
-            .primary_container = container.apply(roles.accent),
-            .on_primary_container = foreground,
-            .secondary = roles.secondary,
-            .on_secondary = on.apply(roles.secondary),
-            .secondary_container = container.apply(roles.secondary),
+            .primary_container = roles.accent,
+            .on_primary_container = on.apply(roles.accent),
+            .secondary = muted,
+            .on_secondary = background,
+            .secondary_container = overlay,
             .on_secondary_container = foreground,
-            .tertiary = tertiary,
-            .on_tertiary = on.apply(tertiary),
-            .tertiary_container = container.apply(tertiary),
+            .tertiary = roles.warning,
+            .on_tertiary = on.apply(roles.warning),
+            .tertiary_container = tertiary_container,
             .on_tertiary_container = foreground,
             .@"error" = roles.@"error",
             .on_error = on.apply(roles.@"error"),
-            .error_container = container.apply(roles.@"error"),
-            .on_error_container = foreground,
-            .outline = variations.line.border.apply(background),
-            .outline_variant = variations.line.separator.apply(background),
-            .surface = background,
+            .error_container = roles.@"error",
+            .on_error_container = on.apply(roles.@"error"),
+            .outline = overlay,
+            .outline_variant = raised,
+            .surface = raised,
             .on_surface = foreground,
-            .on_surface_variant = variations.emphasis.muted.apply(foreground),
-            .surface_dim = variations.surface.sunken.apply(background),
-            .surface_bright = variations.surface.raised.apply(background),
-            .surface_container_lowest = variations.surface.sunken.apply(background),
+            .on_surface_variant = muted,
+            .surface_dim = sunken,
+            .surface_bright = overlay,
+            .surface_container_lowest = sunken,
             .surface_container_low = background,
-            .surface_container = variations.surface.raised.apply(background),
-            .surface_container_high = variations.surface.overlay.apply(background),
-            .surface_container_highest = variations.surface.overlay.then(variations.surface.raised).apply(background),
+            .surface_container = raised,
+            .surface_container_high = overlay,
+            .surface_container_highest = variations.line.border.apply(background),
             .inverse_surface = foreground,
             .on_inverse_surface = background,
             .links = roles.link,
@@ -104,7 +132,8 @@ pub fn apply(self: App, output: *kosm.Output) !void {
     try preferences.set(.{key}, theme_name);
 }
 
-/// What `theme.json` holds: the base, the colors that are set and the foundation's color.
+/// What `theme.json` holds: the base, the colors that are set, the foundation's color and the
+/// settings that are set.
 fn themeValue(self: App, allocator: std.mem.Allocator) std.mem.Allocator.Error!kosm.Value {
     var sections: std.ArrayList(kosm.Value.Entry) = .empty;
     try sections.append(allocator, .{ .key = "base", .value = .{ .string = @tagName(self.base) } });
@@ -113,7 +142,22 @@ fn themeValue(self: App, allocator: std.mem.Allocator) std.mem.Allocator.Error!k
         const foundation = try allocator.dupe(kosm.Value.Entry, &.{.{ .key = "color", .value = .{ .color = color } }});
         try sections.append(allocator, .{ .key = "foundation", .value = .{ .table = foundation } });
     }
+    if (try settingsValue(allocator, self.settings)) |settings| try sections.append(allocator, .{ .key = "settings", .value = settings });
     return .{ .table = sections.items };
+}
+
+/// The set fields of `settings` under Commet's camelCase names; null when none is set.
+fn settingsValue(allocator: std.mem.Allocator, settings: Settings) std.mem.Allocator.Error!?kosm.Value {
+    var entries: std.ArrayList(kosm.Value.Entry) = .empty;
+    inline for (@typeInfo(Settings).@"struct".field_names) |name| {
+        const value: ?kosm.Value = switch (@TypeOf(@field(settings, name))) {
+            ?bool => if (@field(settings, name)) |on| .{ .boolean = on } else null,
+            ?f64 => if (@field(settings, name)) |pixels| .{ .float = pixels } else null,
+            else => @compileError("Settings." ++ name ++ " has a type settingsValue does not write"),
+        };
+        if (value) |present| try entries.append(allocator, .{ .key = comptime camelCase(name), .value = present });
+    }
+    return if (entries.items.len == 0) null else .{ .table = entries.items };
 }
 
 /// The set fields of `scheme` under Commet's camelCase names; null when none is set.
@@ -204,11 +248,12 @@ const preferences_path = "~/.var/app/chat.commet.commetapp/data/commet/shared_pr
 
 const test_theme = kosm.Theme.from(.{ .palette = .{ .black = kosm.hex("041c26"), .white = kosm.hex("a3c5cc"), .cyan = kosm.hex("2d8699") }, .mode = .dark });
 
-test "the theme is written whole with alpha-first colors under camelCase keys, and the preferences select it" {
+test "the theme is laid out like Commet's Dark with alpha-first colors under camelCase keys, and the preferences select it" {
     var fixture: Fixture = undefined;
     try fixture.init(preferences_json);
     defer fixture.deinit();
-    try from(test_theme).apply(&fixture.output);
+    const app = from(test_theme);
+    try app.apply(&fixture.output);
 
     const written = fixture.planned(theme_path);
     try testing.expect(std.mem.startsWith(u8, written,
@@ -217,18 +262,29 @@ test "the theme is written whole with alpha-first colors under camelCase keys, a
         \\  "colorScheme": {
         \\    "primary": "#ff2d8699",
         \\    "onPrimary": "#ff041c26",
-        \\    "primaryContainer": "#402d8699",
-        \\    "onPrimaryContainer": "#ffa3c5cc",
-        \\    "secondary": "#ff
+        \\    "primaryContainer": "#ff2d8699",
+        \\
     ));
-    try testing.expect(std.mem.indexOf(u8, written, "\"surface\": \"#ff041c26\",\n    \"onSurface\": \"#ffa3c5cc\",\n") != null);
-    try testing.expect(std.mem.indexOf(u8, written, "\"surfaceContainerHighest\": ") != null);
-    try testing.expect(std.mem.indexOf(u8, written, "\"codeHighlight\": ") != null);
+    try testing.expect(std.mem.indexOf(u8, written, "\"surfaceContainerLow\": \"#ff041c26\",\n") != null);
+    try testing.expect(std.mem.indexOf(u8, written, "\"onSurface\": \"#ffa3c5cc\",\n") != null);
     try testing.expect(std.mem.indexOf(u8, written, "seed") == null);
     try testing.expect(std.mem.indexOf(u8, written, "primaryFixed") == null);
-    try testing.expect(std.mem.endsWith(u8, written, "  \"foundation\": {\n    \"color\": \"#ff041c26\"\n  }\n}\n"));
+    try testing.expect(std.mem.endsWith(u8, written, "  \"settings\": {\n    \"caulkBorders\": true,\n    \"caulkBorderRadius\": 1\n  }\n}\n"));
+    try testing.expect(std.mem.indexOf(u8, written, "\"tertiaryContainer\": \"#14") != null);
 
     try testing.expectEqualStrings("{\"flutter.check_for_updates\":false,\"flutter.app_theme\":\"kosm\",\"flutter.player_volume\":37.17}", fixture.planned(preferences_path));
+}
+
+test "quiet text is the muted foreground, not a hue, and light mode draws no borders" {
+    const app = from(test_theme);
+    const scheme = app.color_scheme;
+    try testing.expectEqual(test_theme.variations.emphasis.muted.apply(test_theme.roles.foreground), scheme.secondary.?);
+    try testing.expectEqual(test_theme.roles.background, scheme.surface_container_low.?);
+
+    const light_theme = kosm.Theme.from(.{ .palette = .{ .black = kosm.hex("041c26"), .white = kosm.hex("a3c5cc"), .cyan = kosm.hex("2d8699") }, .mode = .light });
+    const light = from(light_theme);
+    try testing.expectEqual(.light, light.base);
+    try testing.expectEqual(null, light.settings.caulk_borders);
 }
 
 test "preferences without a theme gain the key, and null preferences are left alone" {

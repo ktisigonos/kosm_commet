@@ -21,13 +21,13 @@ Commet's fonts are built in and its window is opaque, so the app has no font or 
 With the theme's `files = .per_kosmos` the theme's folder is named after the kosmos instead
 (`krystallos.dark`), so each kosmos applied keeps its own.
 
-`from(theme)` sets the base from the theme's mode, Material's primary, secondary and error
-colors from the accent, secondary and error roles and tertiary from the palette's purple, each
-with readable text from `contrast.on` and a container from `alpha.highlight`; the surfaces from
-the background role through `surface.sunken`, `surface.raised` and `surface.overlay`, outlines
-from `line.border` and `line.separator`, text from the foreground role (`emphasis.muted` for the
-quieter one), links from the link role and inline code from the keyword code color. The
-foundation, the backdrop behind every panel, is the background role.
+`from(theme)` lays the colors out like Commet's own Dark and Light themes, which are built on
+the same Material slots: most panels (`surface_container_low`) on the background role, one
+shade below it (`surface.sunken`, also the foundation behind every panel) and a few above
+(`surface.raised`, `surface.overlay`, `line.border`); quiet text and icons, which Commet takes
+from `secondary`, the foreground made muted; the accent only as `primary`; `tertiary` from the
+warning role, as Dark uses yellow; errors, links and inline code from the error, link and keyword
+code colors; and, in dark mode, Dark's 1 px round borders between panels.
 
 ## Fields
 
@@ -38,4 +38,5 @@ foundation, the backdrop behind every panel, is the background role.
 | `preferences` | `~/.var/app/chat.commet.commetapp/data/commet/shared_preferences.json`, whose `flutter.app_theme` selects the theme; null leaves it alone |
 | `base` | `.dark`; `.light`, `.you_dark` or `.you_light` (the desktop's accent color); the theme the colors left null come from |
 | `color_scheme` | every key of Commet's `colorScheme` in Zig casing: `seed` and `dynamic_scheme_variant`, Material 3's roles (`primary`, `on_primary`, `primary_container`, ..., `surface_container_highest`, `inverse_surface`, `shadow`, `scrim`, `surface_tint`), `links` and `code_highlight`; null leaves each color to the base |
-| `foundation_color` | null: the base's |
+| `foundation_color` | null: the base's; `from`: the background, `surface.sunken` |
+| `settings` | `caulk_borders`, `caulk_stroke_thickness`, `caulk_border_radius`, `caulk_padding`, `shadow_blur_radius`; Commet replaces the base's with these, so null is off or 0; `from`: borders 1 px round in dark mode, as Commet's Dark |
