@@ -82,26 +82,25 @@ outline: ?Color = null,
 /// Dividers and quieter borders. `from`: the background, `surface.raised`.
 outline_variant: ?Color = null,
 
-/// Material's base surface, a step above the panels in Commet's Dark. `from`: the background,
-/// `surface.raised`.
+/// The main area beside the room list. `from`: the background role.
 surface: ?Color = null,
 /// Text and icons on every surface. `from`: the foreground role.
 on_surface: ?Color = null,
 /// Quieter text and icons on surfaces. `from`: the foreground, `emphasis.muted`.
 on_surface_variant: ?Color = null,
-/// A surface darker than `surface` in dark mode. `from`: the background, `surface.sunken`.
+/// A surface darker than `surface` in dark mode. `from`: the background role.
 surface_dim: ?Color = null,
 /// A surface brighter than `surface` in dark mode. `from`: the background, `surface.overlay`.
 surface_bright: ?Color = null,
-/// The lowest container. `from`: the background, `surface.sunken`.
+/// The space rail. `from`: the background role.
 surface_container_lowest: ?Color = null,
 /// Most of Commet's panels. `from`: the background role.
 surface_container_low: ?Color = null,
-/// `from`: the background, `surface.raised`.
+/// Inputs and cards, such as the search bar. `from`: the background, `surface.raised`.
 surface_container: ?Color = null,
 /// `from`: the background, `surface.overlay`.
 surface_container_high: ?Color = null,
-/// The highest container. `from`: the background, `line.border`.
+/// The highest container. `from`: the background, `surface.overlay`.
 surface_container_highest: ?Color = null,
 
 /// A surface in the foreground's color, such as a snackbar. `from`: the foreground role.
