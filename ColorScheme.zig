@@ -48,12 +48,11 @@ on_secondary_fixed: ?Color = null,
 /// `onSecondaryFixedVariant`. null: the base's.
 on_secondary_fixed_variant: ?Color = null,
 
-/// A highlight beside `primary`, such as mentions. `from`: the warning role, as Commet's Dark
-/// uses yellow.
+/// A highlight beside `primary`, such as mentions. `from`: the tertiary role.
 tertiary: ?Color = null,
-/// Text and icons on `tertiary`. `from`: the warning's `contrast.on`.
+/// Text and icons on `tertiary`. `from`: the tertiary's `contrast.on`.
 on_tertiary: ?Color = null,
-/// A faint wash of the tertiary color. `from`: the warning role at alpha 20/255, as in
+/// A faint wash of the tertiary color. `from`: the tertiary role at alpha 20/255, as in
 /// Commet's Dark.
 tertiary_container: ?Color = null,
 /// Text and icons on `tertiary_container`. `from`: the foreground role.

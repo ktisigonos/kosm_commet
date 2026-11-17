@@ -25,7 +25,7 @@ With the theme's `files = .per_kosmos` the theme's folder is named after the kos
 room's side panel) and the foundation behind them on the background role, and the overlay shade
 (`surface.overlay`) for menus, popups and hovered items; quiet text and
 icons, which Commet takes from `secondary`, the foreground made muted; the accent only as
-`primary`; `tertiary` from the warning role, as Commet's Dark uses yellow; errors, links and
+`primary`; `tertiary` from the tertiary role; errors, links and
 inline code from the error, link and keyword code colors; and, in dark mode, Dark's rounded
 panel corners.
 

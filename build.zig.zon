@@ -9,8 +9,8 @@
             .hash = "kosm_json-0.0.0-F6-Idb2qAADSKPg6lCwaWLWNCwevefNEBVEPBTxbuGWg",
         },
         .kosm = .{
-            .url = "git+https://git.nnstdios.com/ktisigonos/kosm?ref=master#12c064d7d057c8f156c5bdea54aa9d66f3dfc4c0",
-            .hash = "kosm-0.0.0-YCShsltFDACF86BaQyNgVB3-C86ROmOi3Hog97-HnJs0",
+            .url = "git+https://git.nnstdios.com/ktisigonos/kosm?ref=master#dd68e7a5c95c248ea1483687eb1709f95888ef0a",
+            .hash = "kosm-0.0.0-YCShsq9xDQDfu_PO3FGs4AOx9QRx0PIwYiox5t0jplOf",
         },
     },
     .paths = .{

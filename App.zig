@@ -58,7 +58,7 @@ const faint_alpha = 20.0 / 255.0;
 /// Colors from the theme, flat: every panel on the background, the overlay shade for menus,
 /// popups and hovered items, quiet text and icons
 /// (Commet's `secondary`) from the foreground made muted, the accent only where Commet wants
-/// one, tertiary from the warning role, errors, links and inline code from their roles, and
+/// one, tertiary from the tertiary role, errors, links and inline code from their roles, and
 /// Dark's rounded panel corners in dark mode.
 pub fn from(theme: kosm.Theme) App {
     const roles = theme.roles;
@@ -70,7 +70,7 @@ pub fn from(theme: kosm.Theme) App {
     const muted = variations.emphasis.muted.apply(foreground);
     const raised = surface.raised.apply(background);
     const overlay = surface.overlay.apply(background);
-    var tertiary_container = roles.warning;
+    var tertiary_container = roles.tertiary;
     tertiary_container.alpha = faint_alpha;
     const dark = theme.mode == .dark;
     return .{
@@ -87,8 +87,8 @@ pub fn from(theme: kosm.Theme) App {
             .on_secondary = background,
             .secondary_container = overlay,
             .on_secondary_container = foreground,
-            .tertiary = roles.warning,
-            .on_tertiary = on.apply(roles.warning),
+            .tertiary = roles.tertiary,
+            .on_tertiary = on.apply(roles.tertiary),
             .tertiary_container = tertiary_container,
             .on_tertiary_container = foreground,
             .@"error" = roles.@"error",
