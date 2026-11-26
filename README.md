@@ -29,6 +29,9 @@ icons, which Commet takes from `secondary`, the foreground made muted; the accen
 inline code from the error, link and keyword code colors; and, in dark mode, Dark's rounded
 panel corners.
 
+`kosm doctor` checks that Commet is installed the way `file` assumes: the Flatpak for its
+folder, else the `commet` command.
+
 ## Fields
 
 | Field | Default |

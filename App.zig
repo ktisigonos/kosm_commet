@@ -115,6 +115,17 @@ pub fn from(theme: kosm.Theme) App {
     };
 }
 
+/// What `kosm doctor` checks: Commet installed the way `file` assumes, as its Flatpak when
+/// `file` is in the Flatpak's folder, else as the `commet` command.
+pub fn checkup(self: App) kosm.Checkup {
+    if (std.mem.startsWith(u8, self.file, flatpak_folder)) return .{ .program = .{ .flatpak = flatpak_id } };
+    return .{ .program = .{ .command = "commet" } };
+}
+
+/// The Flatpak's app id, and the folder it keeps its files in.
+const flatpak_id = "chat.commet.commetapp";
+const flatpak_folder = "~/.var/app/" ++ flatpak_id ++ "/";
+
 /// Writes the theme whole, then sets the preferences to select it.
 pub fn apply(self: App, output: *kosm.Output) !void {
     const file = try output.namedFile(self.file, self.files);
@@ -353,4 +364,11 @@ test "per kosmos, the theme gets a folder of the kosmos' own, which the preferen
     try from(theme).apply(&fixture.output);
     try testing.expect(std.mem.startsWith(u8, fixture.planned("~/.var/app/chat.commet.commetapp/data/commet/theme/custom/krystallos.dark/theme.json"), "{\n  \"base\": \"dark\""));
     try testing.expect(std.mem.indexOf(u8, fixture.planned(preferences_path), "\"flutter.app_theme\":\"krystallos.dark\"") != null);
+}
+
+test "checkup asks for the Flatpak or the command, whichever file is written for" {
+    try testing.expectEqualStrings("chat.commet.commetapp", (App{}).checkup().program.?.flatpak.?);
+    const native = (App{ .file = "~/.local/share/chat.commet.commetapp/theme/custom/{name}/theme.json" }).checkup().program.?;
+    try testing.expectEqualStrings("commet", native.command.?);
+    try testing.expectEqual(null, native.flatpak);
 }
